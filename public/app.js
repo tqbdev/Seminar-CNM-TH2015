@@ -6,13 +6,13 @@ const socket = io();
 const client = feathers();
 
 client.configure(feathers.socketio(socket));
-// Use localStorage to store our login token
+// Use localStorage to store our send token
 
 // Login screen
-const loginHTML = `<main class="login container">
+const sendHTML = `<main class="login container">
   <div class="row">
     <div class="col-12 col-6-tablet push-3-tablet text-center heading">
-      <h1 class="font-100">Log in or signup</h1>
+      <h1 class="font-100">Socket IO</h1>
     </div>
   </div>
   <div class="row">
@@ -26,7 +26,7 @@ const loginHTML = `<main class="login container">
           <input class="block" type="text" name="input" placeholder="Input">
         </fieldset>
 
-        <button type="button" id="login" class="button button-primary block signup">
+        <button type="button" id="send" class="button button-primary block signup">
           SEND
         </button>
       </form>
@@ -34,28 +34,21 @@ const loginHTML = `<main class="login container">
   </div>
 </main>`;
 
-// Add a new user to the list
-const addUser = user => {
+const addMessage = user => {
   const userList = document.querySelector('[name="output');
 
   if(userList) {
-    // Add the user to the list
     userList.value = user.email;
     console.log(user.email)
   }
 };
 
-// Show the login page
 const showLogin = async (user) => {
- document.getElementById('app').innerHTML = loginHTML;
-   // Find all users
-  // const users = await client.service('users').find();
-  // users.data.forEach(addUser);
-  addUser(user);
+ document.getElementById('app').innerHTML = sendHTML;
+  addMessage(user);
 };
 
-// Retrieve email/password object from the login/signup page
-const getCredentials = () => {
+const getInputText = () => {
   const user = {
     email: document.querySelector('[name="input"]').value
   };
@@ -63,23 +56,22 @@ const getCredentials = () => {
   return user;
 };
 
-// Log in either using the given email/password or the token from storage
-const login = credentials => {
-      showLogin(credentials)
+const send = input => {
+      showLogin(input)
 };
 
 document.addEventListener('click', async ev => {
-  if(ev.target.id == 'login') {
+  if(ev.target.id == 'send') {
     // For signup, create a new user and then log them in
-    const credentials = getCredentials();
+    const input = getInputText();
     // First create the user
-    await client.service('users').create(credentials);
+    await client.service('users').create(input);
     // If successful log them in
-    await login(credentials);
+    await send(input);
   }
 });
 
 // We will also see when new users get created in real-time
-client.service('users').on('created', addUser);
+client.service('users').on('created', addMessage);
 
-login();
+send();
