@@ -1,11 +1,10 @@
-const gravatar = require('../../hooks/gravatar');
 
 module.exports = {
   before: {
     all: [],
     find: [],
     get: [],
-    create: [gravatar() ],
+    create: [],
     update: [],
     patch: [],
     remove: []
