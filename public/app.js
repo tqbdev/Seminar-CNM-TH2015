@@ -38,8 +38,8 @@ const addMessage = user => {
   const userList = document.querySelector('[name="output');
 
   if(userList) {
-    userList.value = user.email;
-    console.log(user.email)
+    userList.value = user.text;
+    console.log(user.text)
   }
 };
 
@@ -50,7 +50,7 @@ const showLogin = async (user) => {
 
 const getInputText = () => {
   const user = {
-    email: document.querySelector('[name="input"]').value
+    text: document.querySelector('[name="input"]').value
   };
 
   return user;
@@ -65,13 +65,13 @@ document.addEventListener('click', async ev => {
     // For signup, create a new user and then log them in
     const input = getInputText();
     // First create the user
-    await client.service('users').create(input);
+    await client.service('messages').create(input);
     // If successful log them in
     await send(input);
   }
 });
 
-// We will also see when new users get created in real-time
-client.service('users').on('created', addMessage);
+// We will also see when new messages get created in real-time
+client.service('messages').on('created', addMessage);
 
 send();
