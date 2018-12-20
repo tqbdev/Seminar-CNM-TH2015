@@ -3,14 +3,10 @@
 // Establish a Socket.io connection
 const socket = io();
 // Initialize our Feathers client application through Socket.io
-// with hooks and authentication.
 const client = feathers();
 
 client.configure(feathers.socketio(socket));
 // Use localStorage to store our login token
-client.configure(feathers.authentication({
-  storage: window.localStorage
-}));
 
 // Login screen
 const loginHTML = `<main class="login container">
@@ -137,18 +133,6 @@ const showLogin = (error = {}) => {
 const showChat = async () => {
   document.getElementById('app').innerHTML = chatHTML;
 
-  // Find the latest 10 messages. They will come with the newest first
-  // which is why we have to reverse before adding them
-  // const messages = await client.service('messages').find({
-  //   query: {
-  //     $sort: { createdAt: -1 },
-  //     $limit: 25
-  //   }
-  // });
-  
-  // We want to show the newest message last
-  // messages.data.reverse().forEach(addMessage);
-
   // Find all users
   const users = await client.service('users').find();
 
@@ -166,24 +150,14 @@ const getCredentials = () => {
 };
 
 // Log in either using the given email/password or the token from storage
-const login = async credentials => {
-  try {
-    if(!credentials) {
-      // Try to authenticate using the JWT from localStorage
-      await client.authenticate();
-    } else {
-      // If we get login information, add the strategy we want to use for login
-      const payload = Object.assign({ strategy: 'local' }, credentials);
-
-      await client.authenticate(payload);
-    }
-
+const login = credentials => {
+    if(credentials!=undefined){
     // If successful, show the chat page
     showChat();
-  } catch(error) {
-    // If we got an error, show the login page
-    showLogin(error);
-  }
+    }
+    else{
+      showLogin()
+    }
 };
 
 document.addEventListener('click', async ev => {
@@ -206,11 +180,8 @@ document.addEventListener('click', async ev => {
 
     break;
   }
-  case 'logout': {
-    await client.logout();
-    
+  case 'logout': { 
     document.getElementById('app').innerHTML = loginHTML;
-    
     break;
   }
   }
@@ -231,9 +202,6 @@ document.addEventListener('submit', async ev => {
     input.value = '';
   }
 });
-
-// Listen to created events and add the new message in real-time
-// client.service('messages').on('created', addMessage);
 
 // We will also see when new users get created in real-time
 client.service('users').on('created', addUser);
