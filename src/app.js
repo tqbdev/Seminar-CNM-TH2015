@@ -11,7 +11,6 @@ const socketio = require('@feathersjs/socketio');
 
 
 const logger = require('./logger');
-const middleware = require('./middleware');
 const services = require('./services');
 const appHooks = require('./app.hooks');
 const channels = require('./channels');
@@ -37,7 +36,6 @@ app.configure(express.rest());
 app.configure(socketio());
 
 // Configure other middleware (see `middleware/index.js`)
-app.configure(middleware);
 app.configure(authentication);
 // Set up our services (see `services/index.js`)
 app.configure(services);
